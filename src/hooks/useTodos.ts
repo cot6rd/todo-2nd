@@ -69,6 +69,18 @@ export function useTodos() {
     setTodos((prev) => prev.filter((t) => !t.completed));
   }, []);
 
+  const reorderTodo = useCallback((fromId: string, toId: string) => {
+    setTodos((prev) => {
+      const fromIndex = prev.findIndex((t) => t.id === fromId);
+      const toIndex = prev.findIndex((t) => t.id === toId);
+      if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return prev;
+      const next = [...prev];
+      const [removed] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, removed);
+      return next;
+    });
+  }, []);
+
   const filteredTodos = todos.filter((t) => {
     if (filter === "active") return !t.completed;
     if (filter === "completed") return t.completed;
@@ -87,6 +99,7 @@ export function useTodos() {
     deleteTodo,
     editTodo,
     clearCompleted,
+    reorderTodo,
     activeCount,
     completedCount,
   };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, type DragEvent } from "react";
 import { useTodos } from "@/hooks/useTodos";
 import { TodoForm } from "@/components/TodoForm";
 import { TodoItem } from "@/components/TodoItem";
@@ -15,9 +16,20 @@ export default function Home() {
     deleteTodo,
     editTodo,
     clearCompleted,
+    reorderTodo,
     activeCount,
     completedCount,
   } = useTodos();
+
+  const [dragId, setDragId] = useState<string | null>(null);
+
+  function handleDragOver(e: DragEvent, targetId: string) {
+    e.preventDefault();
+    if (dragId && dragId !== targetId) {
+      reorderTodo(dragId, targetId);
+      setDragId(targetId);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-900">
@@ -30,7 +42,7 @@ export default function Home() {
           <TodoForm onAdd={addTodo} />
 
           {todos.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {todos.map((todo) => (
                 <TodoItem
                   key={todo.id}
@@ -38,6 +50,10 @@ export default function Home() {
                   onToggle={toggleTodo}
                   onDelete={deleteTodo}
                   onEdit={editTodo}
+                  isDragging={dragId === todo.id}
+                  onDragStart={() => setDragId(todo.id)}
+                  onDragOver={(e) => handleDragOver(e, todo.id)}
+                  onDragEnd={() => setDragId(null)}
                 />
               ))}
             </ul>
@@ -57,7 +73,7 @@ export default function Home() {
         </div>
 
         <p className="text-center text-xs text-gray-400 dark:text-gray-600">
-          ダブルクリックでタスクを編集
+          ダブルクリックで編集 ／ ⠿ をドラッグして並び替え
         </p>
       </div>
     </main>
