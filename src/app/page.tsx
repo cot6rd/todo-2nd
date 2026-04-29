@@ -22,13 +22,24 @@ export default function Home() {
   } = useTodos();
 
   const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   function handleDragOver(e: DragEvent, targetId: string) {
     e.preventDefault();
+    setDragOverId(targetId);
+  }
+
+  function handleDrop(targetId: string) {
     if (dragId && dragId !== targetId) {
       reorderTodo(dragId, targetId);
-      setDragId(targetId);
     }
+    setDragId(null);
+    setDragOverId(null);
+  }
+
+  function handleDragEnd() {
+    setDragId(null);
+    setDragOverId(null);
   }
 
   return (
@@ -51,9 +62,11 @@ export default function Home() {
                   onDelete={deleteTodo}
                   onEdit={editTodo}
                   isDragging={dragId === todo.id}
+                  isDropTarget={dragOverId === todo.id && dragId !== todo.id}
                   onDragStart={() => setDragId(todo.id)}
                   onDragOver={(e) => handleDragOver(e, todo.id)}
-                  onDragEnd={() => setDragId(null)}
+                  onDrop={() => handleDrop(todo.id)}
+                  onDragEnd={handleDragEnd}
                 />
               ))}
             </ul>

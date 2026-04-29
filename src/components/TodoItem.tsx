@@ -9,8 +9,10 @@ interface Props {
   onDelete: (id: string) => void;
   onEdit: (id: string, text: string) => void;
   isDragging: boolean;
+  isDropTarget: boolean;
   onDragStart: () => void;
   onDragOver: (e: DragEvent) => void;
+  onDrop: () => void;
   onDragEnd: () => void;
 }
 
@@ -40,7 +42,7 @@ const PRIORITY_STYLES = {
 
 const PRIORITY_LABEL = { high: "高", medium: "中", low: "低" } as const;
 
-export function TodoItem({ todo, onToggle, onDelete, onEdit, isDragging, onDragStart, onDragOver, onDragEnd }: Props) {
+export function TodoItem({ todo, onToggle, onDelete, onEdit, isDragging, isDropTarget, onDragStart, onDragOver, onDrop, onDragEnd }: Props) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -69,8 +71,9 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit, isDragging, onDragS
       draggable={!editing}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
+      onDrop={onDrop}
       onDragEnd={onDragEnd}
-      className={`flex items-center gap-3 rounded-xl border border-gray-200 border-l-4 px-5 py-4 transition-all dark:border-gray-700 ${s.border} ${s.bg} ${s.shadow} ${todo.completed ? "opacity-40" : ""} ${isDragging ? "opacity-50 scale-[0.98] ring-2 ring-blue-400" : ""}`}
+      className={`flex items-center gap-3 rounded-xl border border-gray-200 border-l-4 px-5 py-4 transition-all dark:border-gray-700 ${s.border} ${s.bg} ${s.shadow} ${todo.completed ? "opacity-40" : ""} ${isDragging ? "opacity-50 scale-[0.98]" : ""} ${isDropTarget ? "ring-2 ring-blue-400 ring-offset-1" : ""}`}
     >
       {/* ドラッグハンドル */}
       <span className="cursor-grab text-gray-300 hover:text-gray-400 active:cursor-grabbing select-none shrink-0" aria-hidden>
